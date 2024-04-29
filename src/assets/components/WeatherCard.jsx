@@ -27,7 +27,7 @@ const WeatherCard = ({ weather, temp }) => {
   alt=""
 />
             </div>
-        <article>
+        <article className='info'>
             <h3>{weather?.weather[0].description}</h3>
             <ul>
                 <li><span>Viento:</span><span>{weather?.wind.speed}m/s</span></li>
