@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import axios from 'axios';
 import WeatherCard from './assets/components/WeatherCard';
+import axios from 'axios';
 
 function App() {
   const [coords, setCoords] = useState();
