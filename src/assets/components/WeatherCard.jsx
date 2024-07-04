@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './styles/WeatherCard.css'
 
 const WeatherCard = ({ weather, temp }) => {
 
@@ -38,7 +37,7 @@ const WeatherCard = ({ weather, temp }) => {
         </article>
       </section>
       <h2>{temp && isCelsius ? `${temp.celsius}°C` : `${temp.fahrenheit}°F`} </h2>
-      <button className='button' onClick={changeTemperature}>Change to {isCelsius ? '°F' : '°C'}</button>
+      <button onClick={changeTemperature}>Change to {isCelsius ? '°F' : '°C'}</button>
     </article>
   )
 }
