@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import WeatherCard from './assets/components/WeatherCard';
-import axios from '/axios';
+import axios from 'axios';
 
 function App() {
   const [coords, setCoords] = useState();
@@ -28,7 +28,7 @@ function App() {
       setIsLoading(false);
     };
    
-    
+
     navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
