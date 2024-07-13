@@ -28,6 +28,7 @@ function App() {
       setIsLoading(false);
     };
    
+    
     navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
