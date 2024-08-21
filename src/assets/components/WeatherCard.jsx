@@ -6,6 +6,7 @@ const WeatherCard = ({ weather, temp, forecast }) => {
   const changeTemperature = () => {
     setIsCelsius(prevState => !prevState);
   };
+  
 
   return (
     <article>
@@ -45,6 +46,7 @@ const WeatherCard = ({ weather, temp, forecast }) => {
                 {isCelsius
                   ? `${(day.main.temp - 273.15).toFixed(1)}°C`
                   : `${((day.main.temp - 273.15) * 9/5 + 32).toFixed(1)}°F`}
+                  
               </span>
               <span>{day.weather[0].description}</span>
             </li>
