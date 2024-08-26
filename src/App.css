@@ -17,16 +17,16 @@
 
 .weather-container {
   display: flex;
-  flex-direction: row; /* Alinea los elementos horizontalmente */
-  gap: 1rem; /* Espacio entre los elementos */
+  flex-direction: row; 
+  gap: 1rem; 
 }
 
 .weather-info {
-  flex: 2; /* La parte principal de la información del clima */
+  flex: 2; 
 }
 
 .forecast {
-  flex: 1; /* El pronóstico extendido ocupará el espacio a la izquierda */
+  flex: 1; 
   background-color: rgba(8, 172, 201, 0.5);
   border-radius: 1rem;
   padding: 1rem;

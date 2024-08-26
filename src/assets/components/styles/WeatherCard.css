@@ -1,0 +1,64 @@
+/* .weather-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .weather-info, .forecast {
+    flex: 1;
+  }
+  
+  .weather-info img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .info {
+    margin-left: 20px;
+  }
+  
+  .forecast ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .forecast ul li {
+    flex: 1;
+    min-width: 100px;
+    list-style: none;
+    text-align: center;
+  }
+  
+  .forecast-chart {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .weather-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .forecast ul {
+      flex-direction: column;
+    }
+  
+    .forecast ul li {
+      min-width: auto;
+      text-align: left;
+    }
+  
+    .weather-info img {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .forecast-chart {
+      width: 100%;
+    }
+  }
+   */

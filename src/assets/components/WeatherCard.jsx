@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ForecastChart from './react-chartjs-2'
 
 const WeatherCard = ({ weather, temp, forecast }) => {
   const [isCelsius, setIsCelsius] = useState(true);
@@ -6,10 +7,14 @@ const WeatherCard = ({ weather, temp, forecast }) => {
   const changeTemperature = () => {
     setIsCelsius(prevState => !prevState);
   };
-  
+
+  const openWeatherPage = () => {
+    const weatherUrl = `https://openweathermap.org/city/${weather.id}`;
+    window.open(weatherUrl, '_blank');
+  };
 
   return (
-    <article>
+    <article className="weather-card">
       <div className="weather-info">
         <h1>Clima</h1>
         <h2>{weather?.name}, {weather?.sys.country}</h2>
@@ -44,15 +49,20 @@ const WeatherCard = ({ weather, temp, forecast }) => {
               />
               <span>
                 {isCelsius
-                  ? `${(day.main.temp - 273.15).toFixed(1)}°C`
-                  : `${((day.main.temp - 273.15) * 9/5 + 32).toFixed(1)}°F`}
-                  
+                  ? `${day.main.temp.toFixed(1)}°C`
+                  : `${(day.main.temp * 9/5 + 32).toFixed(1)}°F`}
               </span>
               <span>{day.weather[0].description}</span>
             </li>
           ))}
         </ul>
+        <div className="forecast-chart">
+          <ForecastChart forecast={forecast} isCelsius={isCelsius} /> 
+        </div>
       </div>
+      <button onClick={openWeatherPage} style={{ marginTop: '20px' }}>
+        Ver más en OpenWeatherMap
+      </button>
     </article>
   );
 };

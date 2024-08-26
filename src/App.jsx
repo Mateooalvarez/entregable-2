@@ -9,7 +9,7 @@ function App() {
   const [temp, setTemp] = useState({ celsius: '', fahrenheit: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [forecast, setForecast] = useState([]); // Estado para guardar el pronóstico extendido
+  const [forecast, setForecast] = useState([]);
 
   useEffect(() => {
     const success = (pos) => {
@@ -23,21 +23,21 @@ function App() {
       setHasError(true);
       setIsLoading(false);
     };
-   
+
     navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
   useEffect(() => {
     if (coords) {
       const API_KEY = '19b31a421a36259d849cdb0f494fa7c0';
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${API_KEY}`;
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lon}&units=metric&appid=${API_KEY}`;
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&units=metric&lang=es&appid=${API_KEY}`;
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lon}&units=metric&lang=es&appid=${API_KEY}`;
 
       axios.get(weatherUrl)
         .then(res => { 
           setWeather(res.data);
-          const celsius = (res.data.main.temp - 273.15).toFixed(1);
-          const fahrenheit =  (celsius * 9/5 + 32).toFixed(1);
+          const celsius = res.data.main.temp.toFixed(1);
+          const fahrenheit = (celsius * 9/5 + 32).toFixed(1);
           setTemp({ celsius, fahrenheit });
         })
         .catch(err => {
@@ -47,7 +47,6 @@ function App() {
 
       axios.get(forecastUrl)
         .then(res => {
-          // Filtra para obtener pronósticos de 3 días a la misma hora (12:00 PM)
           const dailyForecast = res.data.list.filter(reading => reading.dt_txt.includes("12:00:00"));
           setForecast(dailyForecast);
         })
@@ -71,7 +70,7 @@ function App() {
           <WeatherCard
             weather={weather}
             temp={temp}
-            forecast={forecast}  // Pasar el pronóstico extendido al componente
+            forecast={forecast}
           />
         )
       )}
