@@ -6,10 +6,10 @@ import WeatherCard from './assets/components/WeatherCard';
 function App() {
   const [coords, setCoords] = useState();
   const [weather, setWeather] = useState(); 
-  const [temp, setTemp] = useState({ celsius: '', fahrenheit: '' });
+  const [forecast, setForecast] = useState([]);
+  const [hourlyForecast, setHourlyForecast] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [forecast, setForecast] = useState([]);
 
   useEffect(() => {
     const success = (pos) => {
@@ -33,22 +33,27 @@ function App() {
       const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&units=metric&lang=es&appid=${API_KEY}`;
       const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lon}&units=metric&lang=es&appid=${API_KEY}`;
 
+      // Datos del clima actual
       axios.get(weatherUrl)
         .then(res => { 
           setWeather(res.data);
-          const celsius = res.data.main.temp.toFixed(1);
-          const fahrenheit = (celsius * 9/5 + 32).toFixed(1);
-          setTemp({ celsius, fahrenheit });
         })
         .catch(err => {
           setHasError(true);
         })
         .finally(() => setIsLoading(false));
 
+      // Pronóstico cada 3 horas (incluye próximas horas y próximos días)
       axios.get(forecastUrl)
         .then(res => {
-          const dailyForecast = res.data.list.filter(reading => reading.dt_txt.includes("12:00:00"));
+          const fullForecast = res.data.list;
+
+          const dailyForecast = fullForecast.filter(reading =>
+            reading.dt_txt.includes("12:00:00")
+          );
+
           setForecast(dailyForecast);
+          setHourlyForecast(fullForecast); // Pasamos todas las horas
         })
         .catch(err => {
           console.log(err);
@@ -57,22 +62,20 @@ function App() {
   }, [coords]);
 
   return (
-    <div className='app'>
+    <div className="app">
       {isLoading ? (
         <div>
-          <h1 style={{ color: 'white' }}>loading...</h1>
+          <h1 style={{ color: 'white' }}>Cargando...</h1>
           <p style={{ color: '#ccc' }}>Por favor, activa la ubicación</p>
         </div>
+      ) : hasError ? (
+        <h1>Para obtener el clima de tu ciudad, por favor permite la ubicación.</h1>
       ) : (
-        hasError ? (
-          <h1>Para obtener el clima de tu ciudad, por favor permite la ubicación.</h1>
-        ) : (
-          <WeatherCard
-            weather={weather}
-            temp={temp}
-            forecast={forecast}
-          />
-        )
+        <WeatherCard
+          weather={weather}
+          forecast={forecast}
+          hourlyForecast={hourlyForecast}
+        />
       )}
     </div>
   );
