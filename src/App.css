@@ -198,3 +198,10 @@ button:hover::after {
     width: 100%;
   }
 }
+.original-forecast-button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+

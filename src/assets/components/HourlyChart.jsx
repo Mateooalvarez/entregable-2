@@ -63,7 +63,8 @@ const HourlyChart = ({ hourly }) => {
       backgroundColor: 'rgba(0,0,0,0.5)',
       borderRadius: '1rem',
       padding: '1rem',
-      marginTop: '2rem'
+      marginTop: '2rem',
+      boxSizing: 'border-box', // Aseguramos que no sobresalga
     }}>
       <h3 style={{ color: 'white', textAlign: 'center', marginBottom: '1rem' }}>
         Pronóstico por hora

@@ -55,6 +55,17 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
           ))}
         </ul>
       </aside>
+
+      {/* Botón de pronóstico original */}
+      <div className="original-forecast-button">
+        <a
+          href="https://openweathermap.org/city"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="animated-button">Ver Mas En OpenWeather</button>
+        </a>
+      </div>
     </div>
   );
 };
