@@ -1,62 +1,101 @@
-import React from 'react';
-import HourlyChart from './HourlyChart';
+import React, { useState } from 'react';
+import AtmospherePanel from './AtmospherePanel';
+import SearchBar from './SearchBar';
+import RadarMap from './RadarMap';
 
-const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
-  if (!weather || !forecast || !hourlyForecast) return null;
+const WeatherCard = ({
+  data,
+  cityName,
+  currentCoords,
+  onSelectCity,
+  onCurrentLocation,
+}) => {
+  const [expandedDay, setExpandedDay] = useState(null);
 
-  const currentTemp = Math.round(weather.main.temp);
-  const feelsLike = Math.round(weather.main.feels_like);
-  const humidity = weather.main.humidity;
-  const wind = (weather.wind.speed * 3.6).toFixed(1);
-  const currentWeather = weather.weather?.[0];
+  if (!data) return null;
 
-  // Detectar el tipo de clima usando los códigos de OpenWeather.
-  const conditionId = Number(currentWeather?.id);
-  let weatherEffect = 'weather-clouds';
-
-  if (conditionId >= 200 && conditionId < 300) {
-    weatherEffect = 'weather-storm';
-  } else if (conditionId >= 300 && conditionId < 600) {
-    weatherEffect = 'weather-rain';
-  } else if (conditionId >= 600 && conditionId < 700) {
-    weatherEffect = 'weather-snow';
-  } else if (conditionId >= 700 && conditionId < 800) {
-    weatherEffect = 'weather-mist';
-  } else if (conditionId === 800) {
-    weatherEffect = 'weather-sunny';
-  } else if (conditionId > 800) {
-    weatherEffect = 'weather-clouds';
-  }
+  const { current, nextHours, daily } = data;
 
   const weatherIcon = (icon) =>
     `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
-  const hourLabel = (timestamp) =>
-    new Date(timestamp * 1000)
-      .toLocaleTimeString('es-AR', {
-        hour: '2-digit',
-        hour12: true,
-      })
-      .replace(':00', '');
+  const formatHour = (isoStr) => {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
 
-  const dayLabel = (timestamp) =>
-    new Date(timestamp * 1000)
-      .toLocaleDateString('es-AR', {
-        weekday: 'short',
-        day: 'numeric',
-      })
-      .replace('.', '');
+  const formatDayName = (dateStr) => {
+    const [year, month, day] = dateStr.split('-');
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString('es-AR', {
+      weekday: 'short',
+      day: 'numeric',
+    }).replace('.', '');
+  };
 
-  // Partículas decorativas del fondo.
+  const formatFullDate = (dateStr) => {
+    const [year, month, day] = dateStr.split('-');
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString('es-AR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+  };
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const getSmartInsight = () => {
+    const nextRain = nextHours.find((h) => h.pop >= 35 || h.rain > 0.2);
+    if (nextRain) {
+      return {
+        icon: '☔',
+        text: `Probabilidad de lluvia (${nextRain.pop}%) cerca de las ${formatHour(nextRain.time)} hs. ¡Tené a mano un paraguas!`,
+      };
+    }
+
+    if (Number(current.wind) >= 35) {
+      return {
+        icon: '💨',
+        text: `Vientos considerables con ráfagas de ${current.wind} km/h. Precaución en la calle.`,
+      };
+    }
+
+    if (current.temp >= 30) {
+      return {
+        icon: '🌡️',
+        text: `Tarde calurosa (${current.temp}°). Recordá mantenerte hidratado.`,
+      };
+    }
+
+    if (current.temp <= 10) {
+      return {
+        icon: '🧥',
+        text: `Ambiente bastante fresco (${current.temp}°). Abrigarse bien para salir.`,
+      };
+    }
+
+    return {
+      icon: '☀️',
+      text: `Condiciones agradables y cielo favorable para actividades al aire libre.`,
+    };
+  };
+
+  const insight = getSmartInsight();
+
   const particles = Array.from({ length: 48 }, (_, index) => {
     const left = (index * 37) % 100;
     const delay = -((index * 13) % 35) / 10;
     const duration =
-      weatherEffect === 'weather-storm'
+      current.effect === 'weather-storm'
         ? 0.75 + (index % 5) * 0.12
-        : weatherEffect === 'weather-rain'
+        : current.effect === 'weather-rain'
           ? 1.1 + (index % 6) * 0.18
-          : weatherEffect === 'weather-snow'
+          : current.effect === 'weather-snow'
             ? 4 + (index % 5)
             : 3 + (index % 5);
 
@@ -73,63 +112,9 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
     );
   });
 
-  /*
-   * El pronóstico diario de OpenWeather puede llegar como:
-   * - una lista ya agrupada por día, o
-   * - una lista de intervalos de 3 horas (forecast estándar).
-   *
-   * En el segundo caso, agrupamos por fecha local y elegimos el
-   * intervalo más cercano al mediodía para representar cada día.
-   * También evitamos duplicar "Hoy" y ordenamos por fecha ascendente.
-   */
-  const dailyForecast = (() => {
-    if (!Array.isArray(forecast)) return [];
-
-    const groups = new Map();
-
-    forecast.forEach((item) => {
-      if (!item?.dt) return;
-
-      const date = new Date(item.dt * 1000);
-      const key = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(item);
-    });
-
-    const today = new Date();
-    const todayKey = `${today.getFullYear()}-${String(
-      today.getMonth() + 1
-    ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-    return Array.from(groups.entries())
-      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
-      .map(([key, items]) => {
-        // Si ya llega un elemento por día, se conserva.
-        if (items.length === 1) return { ...items[0], _dateKey: key };
-
-        // Elegir el pronóstico más cercano a las 12:00 locales.
-        const representative = items.reduce((best, item) => {
-          const hour = new Date(item.dt * 1000).getHours();
-          const bestHour = new Date(best.dt * 1000).getHours();
-
-          return Math.abs(hour - 12) < Math.abs(bestHour - 12)
-            ? item
-            : best;
-        });
-
-        return { ...representative, _dateKey: key };
-      })
-      .filter((day) => day._dateKey >= todayKey)
-      .slice(0, 5);
-  })();
-
-  const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const toggleDay = (key) => {
+    setExpandedDay((prev) => (prev === key ? null : key));
+  };
 
   return (
     <main className="weather-dashboard">
@@ -141,101 +126,105 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
 
         <span className="weather-location">
           <span className="location-dot" />
-          {weather.name}
-          {weather.sys?.country ? `, ${weather.sys.country}` : ''}
+          {cityName || current.name}
         </span>
       </header>
 
-      {/* Clima actual con fondo dinámico */}
-      <section className={`weather-hero ${weatherEffect}`}>
+      <SearchBar
+        onSelectCity={onSelectCity}
+        onCurrentLocation={onCurrentLocation}
+        currentCityName={cityName || current.name}
+        currentCoords={currentCoords}
+      />
+
+      <section className={`weather-hero ${current.effect}`}>
         <div className="weather-effects" aria-hidden="true">
           {particles}
         </div>
 
         <div className="weather-hero-content">
           <span className="weather-eyebrow">CLIMA ACTUAL</span>
-          <h1>{weather.name}</h1>
+          <h1>{current.name}</h1>
 
           <div className="weather-temperature">
-            {currentTemp}
+            {current.temp}
             <span>°</span>
           </div>
 
-          <p className="weather-description">
-            {currentWeather?.description || 'Estado del clima'}
-          </p>
+          <p className="weather-description">{current.description}</p>
 
           <div className="weather-minmax">
-            <span>Se siente como {feelsLike}°</span>
+            <span>Se siente como {current.feelsLike}°</span>
             <span className="weather-minmax-divider">•</span>
-            <span>Humedad {humidity}%</span>
+            <span>Humedad {current.humidity}%</span>
+          </div>
+
+          <div className="weather-smart-insight">
+            <span className="insight-badge">{insight.icon} Consejo</span>
+            <p>{insight.text}</p>
           </div>
         </div>
 
         <div className="weather-hero-illustration">
-          {currentWeather?.icon && (
-            <img
-              src={weatherIcon(currentWeather.icon)}
-              alt={currentWeather.description || 'Clima actual'}
-            />
-          )}
-
+          <img
+            src={weatherIcon(current.icon)}
+            alt={current.description}
+          />
           <div className="weather-orbit weather-orbit-one" />
           <div className="weather-orbit weather-orbit-two" />
         </div>
 
         <div className="weather-hero-footer">
-          <span>Ahora en tu ubicación</span>
+          <span>Actualizado en tiempo real</span>
           <span className="weather-live-dot" />
         </div>
       </section>
 
-      {/* Pronóstico por hora */}
       <section className="weather-hourly-panel">
         <div className="weather-section-heading">
           <div>
-            <span className="weather-eyebrow">PRÓXIMAS HORAS</span>
-            <h2>Pronóstico por hora</h2>
+            <span className="weather-eyebrow">PRÓXIMAS HORAS (CADA 1 HORA)</span>
+            <h2>Evolución horaria</h2>
           </div>
           <span className="weather-heading-symbol">◷</span>
         </div>
 
         <div className="hourly-weather-list">
-          {hourlyForecast.slice(0, 6).map((hour, index) => (
+          {nextHours.map((hour, index) => (
             <article
               className={`hourly-weather-item ${
                 index === 0 ? 'hourly-weather-active' : ''
               }`}
-              key={hour.dt || index}
+              key={hour.time}
             >
               <span className="hourly-weather-time">
-                {index === 0 ? 'Ahora' : hourLabel(hour.dt)}
+                {index === 0 ? 'Ahora' : formatHour(hour.time)}
               </span>
 
-              {hour.weather?.[0]?.icon && (
-                <img
-                  src={weatherIcon(hour.weather[0].icon)}
-                  alt={hour.weather[0].description || 'Clima'}
-                />
-              )}
+              <img
+                src={weatherIcon(hour.icon)}
+                alt={hour.description}
+              />
 
-              <strong>{Math.round(hour.main.temp)}°</strong>
+              <strong>{hour.temp}°</strong>
+              <small style={{ color: '#4dd5ff', fontSize: '0.68rem' }}>
+                {hour.pop > 0 ? `💧 ${hour.pop}%` : '☀️ 0%'}
+              </small>
             </article>
           ))}
         </div>
       </section>
 
-      {/* Detalles meteorológicos */}
       <section className="weather-details-grid">
         <article className="weather-detail-card">
           <div className="weather-detail-top">
             <span className="weather-detail-icon">💧</span>
             <span className="weather-detail-label">HUMEDAD</span>
           </div>
-          <strong>{humidity}%</strong>
-          <p>Humedad actual</p>
+          <strong>{current.humidity}%</strong>
+          <p>Humedad relativa</p>
           <div className="weather-detail-track">
-            <span style={{ width: `${humidity}%` }} />
+            <span style={{ width: `${current.humidity}%` }} />
           </div>
         </article>
 
@@ -245,13 +234,13 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
             <span className="weather-detail-label">VIENTO</span>
           </div>
           <strong>
-            {wind} <small>km/h</small>
+            {current.wind} <small>km/h</small>
           </strong>
           <p>Velocidad del viento</p>
           <div className="weather-detail-track">
             <span
               style={{
-                width: `${Math.min((Number(wind) / 60) * 100, 100)}%`,
+                width: `${Math.min((Number(current.wind) / 60) * 100, 100)}%`,
               }}
             />
           </div>
@@ -262,13 +251,13 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
             <span className="weather-detail-icon">🌡</span>
             <span className="weather-detail-label">SENSACIÓN</span>
           </div>
-          <strong>{feelsLike}°</strong>
+          <strong>{current.feelsLike}°</strong>
           <p>Sensación térmica</p>
           <div className="weather-detail-track">
             <span
               style={{
                 width: `${Math.min(
-                  Math.max(((feelsLike + 10) / 50) * 100, 0),
+                  Math.max(((current.feelsLike + 10) / 50) * 100, 0),
                   100
                 )}%`,
               }}
@@ -277,79 +266,122 @@ const WeatherCard = ({ weather, forecast, hourlyForecast }) => {
         </article>
       </section>
 
-      {/* Gráfico meteorológico */}
+      <RadarMap coords={currentCoords} cityName={cityName || current.name} />
+
       <section className="weather-chart-panel">
         <div className="weather-section-heading">
           <div>
-            <span className="weather-eyebrow">TENDENCIA</span>
-            <h2>Evolución del clima</h2>
+            <span className="weather-eyebrow">CONDICIONES</span>
+            <h2>Atmósfera y Astronomía</h2>
           </div>
+          <span className="weather-heading-symbol">🌌</span>
         </div>
 
-        <HourlyChart hourly={hourlyForecast.slice(0, 12)} />
+        <AtmospherePanel current={current} />
       </section>
 
-      {/* Pronóstico de los próximos días */}
       <section className="weather-forecast-panel">
         <div className="weather-section-heading">
           <div>
-            <span className="weather-eyebrow">PLANIFICÁ TU DÍA</span>
-            <h2>Próximos días</h2>
+            <span className="weather-eyebrow">PRONÓSTICO EXTENDIDO</span>
+            <h2>Próximos 7 días</h2>
           </div>
           <span className="weather-heading-symbol">▦</span>
         </div>
 
         <div className="weather-daily-list">
-          {dailyForecast.map((day, index) => {
-            const date = new Date(day.dt * 1000);
-            const dateKey = `${date.getFullYear()}-${String(
-              date.getMonth() + 1
-            ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-            const isToday = dateKey === todayKey;
+          {daily.map((day) => {
+            const isToday = day.date === todayStr;
+            const isExpanded = expandedDay === day.date;
 
             return (
-              <article
-                className="daily-weather-card"
-                key={dateKey}
-              >
-                <div className="daily-weather-day">
-                  <strong>{isToday ? 'Hoy' : dayLabel(day.dt)}</strong>
-                  <span>
-                    {day.weather?.[0]?.description || 'Pronóstico'}
-                  </span>
-                </div>
+              <div key={day.date} className="daily-weather-group">
+                <article
+                  className={`daily-weather-card ${isExpanded ? 'daily-card-expanded' : ''}`}
+                  onClick={() => toggleDay(day.date)}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="daily-weather-day">
+                    <strong>{isToday ? 'Hoy' : formatDayName(day.date)}</strong>
+                    <span>{day.description}</span>
+                  </div>
 
-                {day.weather?.[0]?.icon && (
                   <img
-                    src={weatherIcon(day.weather[0].icon)}
-                    alt={day.weather[0].description || 'Clima'}
+                    src={weatherIcon(day.icon)}
+                    alt={day.description}
                   />
-                )}
 
-                <strong className="daily-weather-temp">
-                  {Math.round(day.main.temp)}°
-                </strong>
+                  <div className="daily-weather-temp-range">
+                    <span className="daily-temp-max">{day.maxTemp}°</span>
+                    <div className="daily-temp-bar">
+                      <span
+                        className="daily-temp-fill"
+                        style={{
+                          left: `${Math.max(day.minTemp * 2.2, 5)}%`,
+                          width: `${Math.max((day.maxTemp - day.minTemp) * 7.5, 22)}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="daily-temp-min">{day.minTemp}°</span>
+                  </div>
 
-                <div className="daily-weather-extra">
-                  <span>
-                    💧 {Math.round((day.pop || 0) * 100)}%
+                  <div className="daily-weather-extra">
+                    <span>💧 {day.pop}%</span>
+                    <span>🌧️ {day.rain.toFixed(1)} mm</span>
+                  </div>
+
+                  <span className={`daily-expand-chevron ${isExpanded ? 'chevron-rotated' : ''}`}>
+                    ▾
                   </span>
-                  <span>{day.main.humidity}% humedad</span>
-                </div>
-              </article>
+                </article>
+
+                {isExpanded && (
+                  <div className="daily-expanded-details">
+                    <div className="daily-expanded-summary">
+                      <span className="expanded-date-title">{formatFullDate(day.date)}</span>
+                      <div className="expanded-badges">
+                        <span>💧 Lluvia acumulada: {day.rain.toFixed(1)} mm</span>
+                        <span>〰 Viento máx: {day.windMax} km/h</span>
+                        <span>☔ Prob. máx: {day.pop}%</span>
+                      </div>
+                    </div>
+
+                    <div className="expanded-hours-scroll">
+                      {day.hours.map((slot) => (
+                        <div className="expanded-hour-card" key={slot.time}>
+                          <span className="expanded-hour-time">{formatHour(slot.time)}</span>
+                          <img
+                            src={weatherIcon(slot.icon)}
+                            alt={slot.description}
+                          />
+                          <strong className="expanded-hour-temp">{slot.temp}°</strong>
+                          <small className="expanded-hour-feels">ST {slot.feelsLike}°</small>
+                          <span className="expanded-hour-pop">
+                            {slot.pop > 0 ? `💧 ${slot.pop}%` : '☀️ 0%'}
+                          </span>
+                          <span className="expanded-hour-rain">
+                            🌧️ {slot.rain.toFixed(1)} mm
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
       </section>
 
       <footer className="weather-footer">
-        <span>Datos meteorológicos de OpenWeather</span>
+        <span>Datos meteorológicos de Open-Meteo y RainViewer</span>
         <a
-          href="https://openweathermap.org/"
+          href="https://open-meteo.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Ver OpenWeather ↗
+          Ver Open-Meteo ↗
         </a>
       </footer>
     </main>

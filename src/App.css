@@ -1276,3 +1276,742 @@
     background-position: center top;
   }
 }
+/* ===== PANEL DE ATMÓSFERA Y SOL ===== */
+.atmosphere-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tarjeta del Ciclo Solar */
+.solar-card {
+  padding: 22px;
+  background: #0a1934;
+  border: 1px solid rgba(157, 188, 240, 0.1);
+  border-radius: 18px;
+}
+
+.solar-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.solar-card-header h3 {
+  margin: 0;
+  color: #f4f7ff;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.solar-status-pill {
+  padding: 6px 12px;
+  color: #ffde7a;
+  background: rgba(255, 214, 107, 0.12);
+  border: 1px solid rgba(255, 214, 107, 0.25);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.solar-track-wrapper {
+  position: relative;
+  padding: 14px 0 16px;
+}
+
+.solar-track {
+  position: relative;
+  height: 8px;
+  background: rgba(157, 188, 240, 0.12);
+  border-radius: 20px;
+}
+
+.solar-track-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9e44, #ffdc69);
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(255, 214, 107, 0.4);
+}
+
+.solar-sun-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 6px #ffda66);
+}
+
+.solar-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.solar-time-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solar-time-right {
+  text-align: right;
+}
+
+.solar-time-block small {
+  display: block;
+  color: #8fa8cf;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.solar-time-block strong {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.solar-icon {
+  font-size: 1.4rem;
+}
+
+/* Sub-grilla de 3 métricas */
+.atmosphere-subgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 650px) {
+  .atmosphere-subgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.atmosphere-item-card {
+  padding: 18px;
+  background: #0a1934;
+  border: 1px solid rgba(157, 188, 240, 0.1);
+  border-radius: 16px;
+}
+
+.atmosphere-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.atmosphere-icon {
+  font-size: 1.1rem;
+}
+
+.atmosphere-label {
+  color: #90a8d0;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.8px;
+}
+
+.atmosphere-item-card strong {
+  display: block;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.atmosphere-item-card strong small {
+  font-size: 0.78rem;
+  color: #a9bfdf;
+}
+
+.atmosphere-item-card p {
+  margin: 6px 0 0;
+  color: #8fa8cf;
+  font-size: 0.78rem;
+}
+/* ===== DÍAS EXPANDIBLES Y DETALLES ===== */
+.daily-weather-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.daily-weather-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 48px minmax(130px, 1.4fr) minmax(90px, 0.8fr) 24px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #102750;
+  border: 1px solid rgba(164, 193, 245, 0.1);
+  border-radius: 17px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+
+.daily-weather-card:hover {
+  background: #15315f;
+  border-color: rgba(164, 193, 245, 0.3);
+  transform: translateY(-2px);
+}
+
+.daily-card-expanded {
+  background: #143265;
+  border-color: rgba(125, 175, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Rango de temperatura con barrita */
+.daily-weather-temp-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-temp-max {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  min-width: 32px;
+  text-align: right;
+}
+
+.daily-temp-min {
+  color: #8fa8cf;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: 30px;
+}
+
+.daily-temp-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(157, 188, 240, 0.15);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-temp-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #4da4ff, #ffaf4d);
+  border-radius: 10px;
+}
+
+/* Flecha desplegable */
+.daily-expand-chevron {
+  color: #8fa8cf;
+  font-size: 1.2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.chevron-rotated {
+  transform: rotate(180deg);
+  color: #4da4ff;
+}
+
+/* Contenedor desplegado */
+.daily-expanded-details {
+  padding: 16px 18px;
+  background: #091a38;
+  border: 1px solid rgba(125, 175, 255, 0.18);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeInDown 0.28s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.daily-expanded-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(157, 188, 240, 0.1);
+}
+
+.expanded-date-title {
+  color: #f4f7ff;
+  font-weight: 650;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.expanded-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expanded-badges span {
+  padding: 4px 10px;
+  background: #11284f;
+  border: 1px solid rgba(157, 188, 240, 0.15);
+  border-radius: 12px;
+  font-size: 0.73rem;
+  color: #b7ceee;
+}
+
+/* Scroll horizontal de horas */
+.expanded-hours-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.expanded-hours-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.expanded-hours-scroll::-webkit-scrollbar-thumb {
+  background: rgba(157, 188, 240, 0.2);
+  border-radius: 10px;
+}
+
+.expanded-hour-card {
+  min-width: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: #0e2246;
+  border: 1px solid rgba(157, 188, 240, 0.1);
+  border-radius: 14px;
+}
+
+.expanded-hour-time {
+  font-size: 0.72rem;
+  color: #9cb3d6;
+}
+
+.expanded-hour-card img {
+  width: 36px;
+  height: 36px;
+}
+
+.expanded-hour-temp {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.expanded-hour-feels {
+  color: #7b94ba;
+  font-size: 0.68rem;
+}
+
+.expanded-hour-pop {
+  font-size: 0.7rem;
+  color: #4dd5ff;
+}
+
+.expanded-hour-rain {
+  font-size: 0.65rem;
+  color: #a0c2ed;
+}
+
+@media (max-width: 600px) {
+  .daily-weather-card {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(70px, 1fr) 20px;
+    gap: 8px;
+  }
+  .daily-weather-extra {
+    display: none;
+  }
+}
+/* ===== BUSCADOR Y FAVORITOS ===== */
+.search-bar-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 50;
+}
+
+.search-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-field {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-lens-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.search-field input {
+  width: 100%;
+  padding: 12px 38px 12px 40px;
+  background: #0d2147;
+  border: 1px solid rgba(157, 188, 240, 0.2);
+  border-radius: 14px;
+  color: #fff;
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-field input:focus {
+  border-color: #4da4ff;
+  box-shadow: 0 0 14px rgba(77, 164, 255, 0.25);
+}
+
+.search-field input::placeholder {
+  color: #7b94ba;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #8fa8cf;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.search-action-btn {
+  padding: 12px 16px;
+  background: #112850;
+  border: 1px solid rgba(157, 188, 240, 0.2);
+  border-radius: 14px;
+  color: #c0d5f5;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.search-action-btn:hover {
+  background: #193a73;
+  color: #fff;
+}
+
+.search-fav-btn.fav-active {
+  background: rgba(255, 214, 107, 0.15);
+  border-color: rgba(255, 214, 107, 0.4);
+  color: #ffde7a;
+}
+
+/* Menú flotante de resultados */
+.search-dropdown {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  background: #08162e;
+  border: 1px solid rgba(125, 175, 255, 0.25);
+  border-radius: 14px;
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.search-dropdown li {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-dropdown li:hover {
+  background: #143265;
+}
+
+.search-item-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+.search-item-sub {
+  color: #8fa8cf;
+  font-size: 0.78rem;
+}
+
+/* Pastillas de favoritos */
+.favorites-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.favorites-label {
+  font-size: 0.75rem;
+  color: #7b94ba;
+  font-weight: 600;
+}
+
+.fav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: #0d2147;
+  border: 1px solid rgba(157, 188, 240, 0.15);
+  border-radius: 20px;
+  color: #d1e2fc;
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.fav-pill:hover,
+.fav-pill-active {
+  background: #173b75;
+  border-color: #4da4ff;
+  color: #fff;
+}
+
+.fav-pill-remove {
+  background: none;
+  border: none;
+  color: #7b94ba;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fav-pill-remove:hover {
+  color: #ff6e6e;
+}
+
+/* ===== PASTILLA DE CONSEJO INTELIGENTE ===== */
+.weather-smart-insight {
+  margin-top: 18px;
+  padding: 12px 16px;
+  background: rgba(8, 22, 46, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(157, 188, 240, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.insight-badge {
+  padding: 4px 10px;
+  background: rgba(77, 164, 255, 0.18);
+  border: 1px solid rgba(77, 164, 255, 0.35);
+  border-radius: 10px;
+  color: #8ac3ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.weather-smart-insight p {
+  margin: 0;
+  color: #e2eeff;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 600px) {
+  .search-input-row {
+    flex-wrap: wrap;
+  }
+  .search-field {
+    min-width: 100%;
+  }
+}
+/* ===== ASTRONOMÍA: GRILLA SOLAR Y LUNAR ===== */
+.astronomy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .astronomy-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lunar-status-pill {
+  padding: 6px 12px;
+  color: #bfdbfe;
+  background: rgba(191, 219, 254, 0.12);
+  border: 1px solid rgba(191, 219, 254, 0.25);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.lunar-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+
+.lunar-icon-display {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.45));
+}
+
+.lunar-info strong {
+  display: block;
+  color: #fff;
+  font-size: 1.15rem;
+  margin-bottom: 2px;
+}
+
+.lunar-info p {
+  margin: 0;
+  color: #8fa8cf;
+  font-size: 0.78rem;
+}
+
+.lunar-track {
+  height: 6px;
+  background: rgba(157, 188, 240, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.lunar-track-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #e0e7ff);
+  border-radius: 20px;
+  box-shadow: 0 0 8px rgba(224, 231, 255, 0.5);
+}
+
+/* ===== PANEL RADAR METEOROLÓGICO ===== */
+.weather-radar-panel {
+  padding: 24px;
+  background: linear-gradient(145deg, #0d2147, #0a1b3a);
+  border: 1px solid rgba(157, 188, 240, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== BOTONES DEL RADAR ===== */
+.radar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.radar-btn {
+  padding: 8px 14px;
+  background: #112850;
+  border: 1px solid rgba(157, 188, 240, 0.2);
+  border-radius: 12px;
+  color: #c0d5f5;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.radar-btn:hover {
+  background: #1a3c75;
+  color: #fff;
+}
+
+.radar-recenter-btn {
+  background: rgba(77, 164, 255, 0.15);
+  border-color: rgba(77, 164, 255, 0.35);
+  color: #70b8ff;
+}
+
+.radar-recenter-btn:hover {
+  background: rgba(77, 164, 255, 0.28);
+  color: #fff;
+  border-color: #4da4ff;
+}
+.radar-toggle-btn:hover {
+  background: #1a3c75;
+  color: #fff;
+}
+
+
+/* Pastilla propia que tapa el logo de rainviewer */
+.radar-badge-cover {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: #091a38;
+  border: 1px solid rgba(157, 188, 240, 0.25);
+  border-radius: 20px;
+  color: #d2e4ff;
+  font-size: 0.75rem;
+  font-weight: 650;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.radar-live-blip {
+  width: 7px;
+  height: 7px;
+  background: #4de2c2;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #4de2c2;
+  display: inline-block;
+}
+
+/* ===== MARCO DEL RADAR PROFESIONAL (SIN PROPAGANDA) ===== */
+.radar-frame-wrapper {
+  position: relative;
+  width: 100%;
+  height: 430px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(157, 188, 240, 0.15);
+  background: #08162e;
+}
+
+/* Desplaza el mapa hacia arriba para recortar el logo/propaganda de arriba a la izquierda */
+.radar-iframe {
+  position: absolute;
+  top: -48px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 48px);
+  border: none;
+}

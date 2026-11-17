@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Fondo con gradiente degradado azul profundo -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e58c8" />
+      <stop offset="50%" stop-color="#143c91" />
+      <stop offset="100%" stop-color="#081b40" />
+    </linearGradient>
+
+    <!-- Gradiente del Sol -->
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe169" />
+      <stop offset="100%" stop-color="#ff9800" />
+    </linearGradient>
+
+    <!-- Gradiente de la Nube -->
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#cfdfee" />
+    </linearGradient>
+
+    <!-- Gradiente de Gotas -->
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60c5ff" />
+      <stop offset="100%" stop-color="#1e88e5" />
+    </linearGradient>
+
+    <!-- Sombra para dar volumen -->
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.35" />
+    </filter>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Fondo redondeado estilo app de smartphone -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+
+  <!-- Sol radiante con brillo -->
+  <g filter="url(#glow)">
+    <circle cx="330" cy="190" r="75" fill="url(#sunGrad)" />
+  </g>
+
+  <!-- Nube moderna 3D -->
+  <g filter="url(#shadow)">
+    <path d="M190 350 h170 a60 60 0 0 0 10-119 80 80 0 0 0-148-35 60 60 0 0 0-32 154 z" fill="url(#cloudGrad)" />
+  </g>
+
+  <!-- Gotas de lluvia estilizadas -->
+  <g fill="url(#dropGrad)">
+    <path d="M210 375 c-8 14 -16 22 -16 28 a16 16 0 0 0 32 0 c0 -6 -8 -14 -16 -28 z" opacity="0.9" />
+    <path d="M275 375 c-8 14 -16 22 -16 28 a16 16 0 0 0 32 0 c0 -6 -8 -14 -16 -28 z" opacity="0.9" />
+    <path d="M340 375 c-8 14 -16 22 -16 28 a16 16 0 0 0 32 0 c0 -6 -8 -14 -16 -28 z" opacity="0.9" />
+  </g>
+</svg>
